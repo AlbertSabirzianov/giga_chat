@@ -50,13 +50,18 @@ def get_giga_chat_answer(message: str, context: str, authorization_sb_code: str)
         'Accept': 'application/json',
         'Authorization': f'Bearer {__get_token(authorization_sb_code)}'
     }
-    response = requests.request(
-        "POST",
-        urls.completions_url,
-        headers=headers,
-        data=payload,
-        verify=False
-    )
-    return response.json()["choices"][0]["message"]["content"]
+    while True:
+        try:
+            response = requests.request(
+                "POST",
+                urls.completions_url,
+                headers=headers,
+                data=payload,
+                verify=False
+            )
+            return response.json()["choices"][0]["message"]["content"]
+        except requests.exceptions.RequestException:
+            print("Can't connect to gigachat.. try again")
+            continue
 
 
